@@ -554,8 +554,12 @@ let ocaml_natdynlink_available libdir =
   Sys.file_exists (libdir / "ocaml" / "dynlink.cmxa")
 
 (* Reset the path to get the system compiler *)
-let system command = lazy (
+let system (command : string list) = lazy (
   let env = Lazy.force reset_env in
+  OpamGlobals.note "Running command: %s\n\
+                    Environment:\n\
+                    %s" (String.concat " " command)
+                        (String.concat "\n" (Array.to_list env));
   match read_command_output_opt ~verbose:false ~env command with
   | None        -> None
   | Some (h::_) -> Some (OpamMisc.strip h)
